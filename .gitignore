@@ -1,1 +1,5 @@
 target/
+compiletime.txt
+gitbranch.txt
+gitrev.txt
+temp.txt

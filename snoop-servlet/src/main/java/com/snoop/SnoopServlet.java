@@ -21,6 +21,13 @@ package com.snoop;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.net.URI;
+import java.net.URL;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -121,9 +128,11 @@ public class SnoopServlet extends HttpServlet {
         out.println();  
         out.println("Cookies in this request:");
         Cookie[] cookies = request.getCookies();
-        for (int i = 0; i < cookies.length; i++) {
-            Cookie cookie = cookies[i];
-            out.println(escapeHtml("   " + cookie.getName() + " = " + cookie.getValue()));
+        if ( cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                out.println(escapeHtml("   " + cookie.getName() + " = " + cookie.getValue()));
+            }
         }
         out.println();
 
@@ -155,9 +164,36 @@ public class SnoopServlet extends HttpServlet {
             String name = (String) names.nextElement();
             out.println(escapeHtml("   " + name + " = " + session.getAttribute(name)));
         }
+        out.println("Java Version: " + System.getProperty("java.version"));
+        InetAddress ip;
+        String hostname;
+        try {
+            ip = InetAddress.getLocalHost();
+            hostname = ip.getHostName();
+            out.println("Server IP address : " + ip);
+            out.println("Server Hostname : " + hostname);
+ 
+        } catch (UnknownHostException ex) {
+            out.println("Could not get host name: " + ex.getMessage());
+        }
+
+        out.println("Compiled at: " + getResourceContent("/compiletime.txt", out));
+        out.println("Git branch: " + getResourceContent("/gitbranch.txt", out));
+        out.println("Git rev: " + getResourceContent("/gitrev.txt", out));
     }
 
     private String escapeHtml(String s) {
         return StringEscapeUtils.escapeHtml4(s);
     }
+
+    private static String getResourceContent(String filename, PrintWriter out) throws ServletException {
+    try {
+        URI resourcePathFile = SnoopServlet.class.getResource(filename).toURI();
+        String firstLine = Files.readAllLines(Paths.get(resourcePathFile)).get(0);
+        return firstLine;
+    } catch (Exception e) {
+        return "could not read file " + filename +" exception: " + e.getMessage();
+    }
+}
+
 }

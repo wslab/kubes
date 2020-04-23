@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: tomcat
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      tier: backend-tier
+  template:
+    metadata:
+      name: my-tomcat
+      labels:
+        tier: backend-tier
+        app: tomcat
+    spec:
+        containers:
+            - name: snoop
+              image: localhost:32000/snoop:dev
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-service
+spec:
+  selector:
+    app: tomcat
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: tomcat-ingress
+spec:
+  backend:
+    serviceName: tomcat-service
+    servicePort: 8080

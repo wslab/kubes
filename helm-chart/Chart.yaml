@@ -1,0 +1,10 @@
+name: tomcat-service
+apiVersion: v1
+appVersion: "1.0"
+version: 0.1.0
+description: Sample tomcat serivce
+keywords:
+  - tomcat
+home: https://git.taservs.net/akotov/scala-grpc
+sources:
+  - https://git.taservs.net/akotov/scala-grpc

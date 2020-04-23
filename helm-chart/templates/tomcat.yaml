@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: tomcat
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      tier: backend-tier
+  template:
+    metadata:
+      name: my-tomcat
+      labels:
+        tier: backend-tier
+        app: tomcat
+    spec:
+        containers:
+            - name: snoop
+              image: localhost:32000/snoop:dev
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 8080

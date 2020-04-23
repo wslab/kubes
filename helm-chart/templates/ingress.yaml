@@ -1,0 +1,8 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: tomcat-ingress
+spec:
+  backend:
+    serviceName: tomcat-service
+    servicePort: 8080
